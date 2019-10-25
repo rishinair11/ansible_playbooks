@@ -1,0 +1,26 @@
+---
+- name: Install Apache and start the service
+  hosts: linux
+  become: yes
+  tasks:
+    - name: Install Apache on Ubuntu
+      apt: name=apache2 state=latest update_cache=yes
+      when: ansible_os_family == "Debian"
+      notify: start apache ubuntu
+    - name: Install Apache on Centos
+      yum: name=httpd state=latest update_cache=yes
+      when: ansible_os_family == "RedHat"
+      notify: start apache centos
+  handlers:
+    - name: start apache ubuntu
+      become: yes
+      service:
+        name: apache
+        state: started
+        enabled: yes
+    - name: start apache centos
+      become: yes
+      service:
+        name: httpd
+        state: started
+        enabled: yes
